@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quarter4Project", "Quarter4Project\Quarter4Project\Quarter4Project.csproj", "{7224E8A8-F0CD-43A6-A680-9C5646F78E17}"
+EndProject
+Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "Quarter4ProjectContent", "Quarter4Project\Quarter4ProjectContent\Quarter4ProjectContent.contentproj", "{9D80AF9E-C6C4-4DF0-AE9C-97B392290AAA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7224E8A8-F0CD-43A6-A680-9C5646F78E17}.Debug|x86.ActiveCfg = Debug|x86
+		{7224E8A8-F0CD-43A6-A680-9C5646F78E17}.Debug|x86.Build.0 = Debug|x86
+		{7224E8A8-F0CD-43A6-A680-9C5646F78E17}.Release|x86.ActiveCfg = Release|x86
+		{7224E8A8-F0CD-43A6-A680-9C5646F78E17}.Release|x86.Build.0 = Release|x86
+		{9D80AF9E-C6C4-4DF0-AE9C-97B392290AAA}.Debug|x86.ActiveCfg = Debug|x86
+		{9D80AF9E-C6C4-4DF0-AE9C-97B392290AAA}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
