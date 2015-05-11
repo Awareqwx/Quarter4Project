@@ -11,7 +11,7 @@ namespace Quarter4Project
     {
 
         public Boolean deleteMe;
-        int damage;
+        public int damage;
         protected GameManager myGame;
 
         public Attack(Texture2D[] t, Color[] c, int d, Vector2 p, GameManager g) : base(t)

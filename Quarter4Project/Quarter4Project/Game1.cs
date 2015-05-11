@@ -27,6 +27,14 @@ namespace Quarter4Project
         SpriteBatch spriteBatch;
 
         GameManager gameManager;
+        HUD hud;
+
+        #region Cheats
+
+        public Boolean showDebug;
+        public Boolean noClip;
+
+        #endregion
 
         public Game1()
         {
@@ -63,6 +71,7 @@ namespace Quarter4Project
             Maps.init(this);
 
             gameManager = new GameManager(this);
+            hud = new HUD(this, gameManager);
 
             SetCurrentLevel(GameLevels.PLAY);
         }
@@ -88,6 +97,7 @@ namespace Quarter4Project
                 this.Exit();
 
             gameManager.Update(gameTime);
+            hud.Update(gameTime);
 
             // TODO: Add your update logic here
 
@@ -101,7 +111,10 @@ namespace Quarter4Project
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            spriteBatch.Begin();
             gameManager.Draw(gameTime);
+            hud.Draw(gameTime, spriteBatch);
+            spriteBatch.End();
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
@@ -118,6 +131,8 @@ namespace Quarter4Project
                 //menuManager.Visible = false;
                 gameManager.Enabled = false;
                 gameManager.Visible = false;
+                hud.Enabled = false;
+                hud.Visible = false;
                 //winScreen.Enabled = false;
                 //winScreen.Visible = false;
                 //loseScreen.Enabled = false;
@@ -136,6 +151,8 @@ namespace Quarter4Project
                     case GameLevels.PLAY:
                         gameManager.Enabled = true;
                         gameManager.Visible = true;
+                        hud.Enabled = true;
+                        hud.Visible = true;
                         break;
                     case GameLevels.WIN:
                         //winScreen.Enabled = true;

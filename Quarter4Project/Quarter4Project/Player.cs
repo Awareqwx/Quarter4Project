@@ -8,15 +8,12 @@ using System.Text;
 
 namespace Quarter4Project
 {
-    class Player : Entity
+    public class Player : Entity
     {
         KeyboardState keyboard, keyboardPrev;
         MouseState mouse, mousePrev;
 
-        Vector2 direction;
-        float speed;
-        Boolean isFalling;
-        int jumps, maxJumps;
+        public int hp, hpMax;
 
         Texture2D fireball;
         Boolean flip;
@@ -31,7 +28,9 @@ namespace Quarter4Project
             speed = s;
             isFalling = true;
             jumps = 0;
-            maxJumps = 20;
+            maxJumps = 2;
+            hp = hpMax = 100;
+            type = "Player";
             addAnimations();
 
             fireball = myGame.myGame.Content.Load<Texture2D>(@"Images\Test\Fireball");
@@ -49,7 +48,7 @@ namespace Quarter4Project
                 {
                     direction.X = 1;
                     flip = false;
-                    //if (!isFalling)
+                    if (!isFalling)
                     {
                         setAnimation("WALK");
                     }
@@ -58,7 +57,7 @@ namespace Quarter4Project
                 {
                     direction.X = -1;
                     flip = true;
-                    //if (!isFalling)
+                    if (!isFalling)
                     {
                         setAnimation("WALK");
                     }
@@ -66,91 +65,50 @@ namespace Quarter4Project
                 else
                 {
                     direction.X = 0;
-                    if (currentSet.name != "SHOOT" || animIsOver)
+                    if ((currentSet.name != "SHOOT" || animIsOver) && !isFalling)
                     {
                         setAnimation("IDLE");
                     }
                 }
             }
-
-            if(won)
+            if (!myGame.myGame.noClip)
             {
-                setAnimation("HURT");
-            }
-            else if ((keyboard.IsKeyDown(Keys.W) && keyboardPrev.IsKeyUp(Keys.W)) && (!isFalling || jumps < maxJumps))
-            {
-                direction.Y = -1.8f;
-                isFalling = true;
-                jumps++;
-            }
-
-            if (isFalling)
-            {
-                direction.Y += 0.06f;
-            }
-            Color c = Color.White;
-            for (int i = 0; i < myGame.currentMap.GetLength(0); i++)
-            {
-                for (int j = 0; j < myGame.currentMap.GetLength(1); j++)
+                if (won)
                 {
-                    if (myGame.currentMap[i,j].getType() == Tile.TileTypes.WALL)
-                    {
-                        if (collidesWithTile(myGame.currentMap[i, j]) == 1)
-                        {
-                            if (direction.Y > 0)
-                            {
-                                direction.Y = 0;
-                                isFalling = false;
-                                jumps = 0;
-                            }
-                            position.Y -= position.Y % 40;
-                            c = Color.Green;
-                        }
-                        else
-                        {
-                            isFalling = true;
-                            //setAnimation("JUMP");
-
-                            if (collidesWithTile(myGame.currentMap[i, j]) == 2)
-                            {
-                                if (direction.Y < 0)
-                                {
-                                    direction.Y = 0;
-                                }
-                                position.Y += 39 - ((position.Y - 1) % 40);
-                                c = Color.Red;
-                            }
-                            else if (collidesWithTile(myGame.currentMap[i, j]) == 3)
-                            {
-                                if (direction.X > 0)
-                                {
-                                    direction.X = 0;
-                                }
-                                position.X -= position.X % 40;
-                                c = Color.Blue;
-                            }
-                            else if (collidesWithTile(myGame.currentMap[i, j]) == 4)
-                            {
-                                if (direction.X < 0)
-                                {
-                                    direction.X = 0;
-                                }
-                                position.X += 39 - ((position.X - 1) % 40);
-                                c = Color.Orange;
-                            }
-                        }
-                        myGame.currentMap[i, j].setTint(c);
-                        c = Color.White;
-                    }
-                    else if (myGame.currentMap[i, j].getType() == Tile.TileTypes.WIN)
-                    {
-                        if (collidesWithTile(myGame.currentMap[i, j]) != 0)
-                        {
-                            won = true;
-                        }
-                    }
+                    setAnimation("WON");
+                }
+                else if ((keyboard.IsKeyDown(Keys.W) && keyboardPrev.IsKeyUp(Keys.W)) && (!isFalling || jumps < maxJumps || myGame.myGame.noClip))
+                {
+                    direction.Y = -1.8f;
+                    isFalling = true;
+                    jumps++;
                 }
             }
+            else
+            {
+                if(keyboard.IsKeyDown(Keys.W))
+                {
+                    direction.Y = -1;
+                }
+                else if(keyboard.IsKeyDown(Keys.S))
+                {
+                    direction.Y = 1;
+                }
+                else
+                {
+                    direction.Y = 0;
+                }
+            }
+            if (myGame.myGame.noClip && colors[0].A != 128)
+            {
+                colors[0].A = 128;
+            }
+            if (!myGame.myGame.noClip && colors[0].A != 255)
+            {
+                colors[0].A = 255;
+            }
+
+            base.Update(gameTime);
 
             if (Math.Abs(direction.Y) > 5)
             {
@@ -191,10 +149,27 @@ namespace Quarter4Project
                 setAnimation("SHOOT");
             }
 
+            if(keyboard.IsKeyDown(Keys.H) && keyboardPrev.IsKeyUp(Keys.H))
+            {
+                takeDamage(5);
+            }
+            if (keyboard.IsKeyDown(Keys.J) && keyboardPrev.IsKeyUp(Keys.J))
+            {
+                heal(5);
+            }
+
+            foreach(Attack a in myGame.enemyAttacks)
+            {
+                if(collisionRect().Intersects(a.collisionRect()))
+                {
+                    takeDamage(a.damage);
+                    a.deleteMe = true;
+                }
+            }
+
             keyboardPrev = keyboard;
             mousePrev = mouse;
 
-            base.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -218,15 +193,20 @@ namespace Quarter4Project
             AnimationSet walk = new AnimationSet("WALK", new Point(40, 80), new Point(6, 1), new Point(0, 1), 100, true);
             AnimationSet jump = new AnimationSet("JUMP", new Point(40, 80), new Point(3, 1), new Point(0, 2), 100, false);
             AnimationSet shoot = new AnimationSet("SHOOT", new Point(60, 80), new Point(2, 1), 150, new Point(240, 0), false);
-            AnimationSet hurt = new AnimationSet("HURT", new Point(40, 80), new Point(1, 1), 1000, new Point(0, 240), false);
+            AnimationSet win = new AnimationSet("WON", new Point(40, 80), new Point(1, 1), 1000, new Point(0, 240), false);
             sets.Add(idle);
             sets.Add(walk);
             sets.Add(jump);
             sets.Add(shoot);
-            sets.Add(hurt);
+            sets.Add(win);
             setAnimation("IDLE");
 
             base.addAnimations();
+        }
+
+        public override void ifWon()
+        {
+                won = true;
         }
 
         public int getJumps()
@@ -242,6 +222,24 @@ namespace Quarter4Project
         public Vector2 getDirection()
         {
             return direction;
+        }
+
+        public void takeDamage(int d)
+        {
+            hp -= d;
+            if(hp < 0)
+            {
+                hp = 0;
+            }
+        }
+
+        public void heal(int h)
+        {
+            hp += h;
+            if(hp > hpMax)
+            {
+                hp = hpMax;
+            }
         }
 
     }

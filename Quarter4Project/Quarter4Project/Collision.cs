@@ -200,7 +200,6 @@ namespace Quarter4Project
             return false;
         }
 
-
         public static bool CheckSegmentSegmentCollision(mapSegment s1, mapSegment s2)
         {
             Line2D l1, l2;
@@ -249,5 +248,22 @@ namespace Quarter4Project
 
         #endregion
 
+        #region Other Methods
+
+        public static float getDistance(Vector2 a, Vector2 b)
+        {
+            float d;
+            d = magnitude(a - b);
+            return d;
+        }
+
+        public static float getDistance(Point a, Point b)
+        {
+            float d;
+            d = magnitude(new Vector2(a.X - b.X, a.Y - b.Y));
+            return d;
+        }
+
+        #endregion
     }
 }

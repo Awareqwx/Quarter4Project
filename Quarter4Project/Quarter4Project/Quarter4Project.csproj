@@ -77,8 +77,10 @@
     <Compile Include="Collision.cs" />
     <Compile Include="CompoundSprite.cs" />
     <Compile Include="Cursor.cs" />
+    <Compile Include="Enemy.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="GameManager.cs" />
+    <Compile Include="HUD.cs" />
     <Compile Include="Maps.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Projectile.cs" />

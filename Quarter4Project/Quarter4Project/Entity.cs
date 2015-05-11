@@ -7,12 +7,18 @@ using System.Text;
 
 namespace Quarter4Project
 {
-    class Entity : AnimatedSprite
+    public class Entity : AnimatedSprite
     {
 
         public Boolean deleteMe;
         Vector2[] points;
         protected GameManager myGame;
+
+        protected Vector2 direction;
+        protected float speed;
+        protected Boolean isFalling;
+        protected int jumps, maxJumps;
+        protected string type;
 
         #region Constructors
 
@@ -37,8 +43,80 @@ namespace Quarter4Project
         {
 
             points = new Vector2[] { position, new Vector2(position.X + getFrameSize().X, position.Y), new Vector2(position.X, position.Y + getFrameSize().Y), new Vector2(position.X + getFrameSize().X, position.Y + getFrameSize().Y) };
-            
+
+            isFalling = true;
+            if ((!myGame.myGame.noClip && type == "Player") || type != "Player")
+            {
+                for (int i = 0; i < myGame.currentMap.tiles.GetLength(0); i++)
+                {
+                    for (int j = 0; j < myGame.currentMap.tiles.GetLength(1); j++)
+                    {
+                        if (myGame.currentMap.tiles[i, j].getType() == Tile.TileTypes.WALL)
+                        {
+                            if (collidesWithTile(myGame.currentMap.tiles[i, j]) == 1)
+                            {
+                                if (direction.Y > 0)
+                                {
+                                    direction.Y = 0;
+                                    jumps = 0;
+                                }
+                                isFalling = false;
+                                position.Y -= position.Y % 40 - 2;
+                            }
+                            else
+                            {
+
+                                if (collidesWithTile(myGame.currentMap.tiles[i, j]) == 2)
+                                {
+                                    if (direction.Y < 0)
+                                    {
+                                        direction.Y = 0;
+                                    }
+                                    position.Y += 39 - ((position.Y - 1) % 40);
+                                }
+                                else if (collidesWithTile(myGame.currentMap.tiles[i, j]) == 3)
+                                {
+                                    if (direction.X > 0)
+                                    {
+                                        direction.X = 0;
+                                    }
+                                    position.X -= position.X % 40;
+                                }
+                                else if (collidesWithTile(myGame.currentMap.tiles[i, j]) == 4)
+                                {
+                                    if (direction.X < 0)
+                                    {
+                                        direction.X = 0;
+                                    }
+                                    position.X += 39 - ((position.X - 1) % 40);
+                                }
+                            }
+                        }
+                        else if (myGame.currentMap.tiles[i, j].getType() == Tile.TileTypes.WIN)
+                        {
+                            if (collidesWithTile(myGame.currentMap.tiles[i, j]) != 0)
+                            {
+                                ifWon();
+                            }
+                        }
+                    }
+                }
+                if (isFalling)
+                {
+                    direction.Y += 0.06f;
+                }
+            }
+            if(isFalling && currentSet.name != "WON")
+            {
+                setAnimation("JUMP");
+            }
+
             base.Update(gameTime);
+        }
+
+        public virtual void ifWon()
+        {
+
         }
 
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch)

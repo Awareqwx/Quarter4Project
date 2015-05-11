@@ -26,6 +26,7 @@ namespace Quarter4Project
 
         public CompoundSprite(Texture2D[] t, Vector2 p, Point fs, Color[] c)
         {
+            keyboardState = new KeyboardState();
             textures = t;
             position = p;
             frameSize = fs;
@@ -38,7 +39,11 @@ namespace Quarter4Project
             textures = t;
             position = p;
             frameSize = fs;
-            colors = new Color[] { Color.White };
+            colors = new Color[t.Length];
+            for (int i = 0; i < colors.Length; i++)
+            {
+                colors[i] = Color.White;
+            }
         }
 
         public CompoundSprite(Texture2D[] t, Point fs)
@@ -47,7 +52,11 @@ namespace Quarter4Project
             textures = t;
             frameSize = fs;
             position = Vector2.Zero;
-            colors = new Color[] { Color.White };
+            colors = new Color[t.Length];
+            for (int i = 0; i < colors.Length; i++)
+            {
+                colors[i] = Color.White;
+            }
         }
 
         public CompoundSprite(Texture2D[] t)
@@ -56,7 +65,11 @@ namespace Quarter4Project
             textures = t;
             frameSize = Point.Zero;
             position = Vector2.Zero;
-            colors = new Color[] { Color.White };
+            colors = new Color[t.Length];
+            for(int i = 0; i < colors.Length; i++)
+            {
+                colors[i] = Color.White;
+            }
         }
 
         #endregion
@@ -83,9 +96,19 @@ namespace Quarter4Project
             return position;
         }
 
+        public void setPos(Vector2 v)
+        {
+            position = v;
+        }
+
         public Point getFrameSize()
         {
             return frameSize;
+        }
+
+        public void setFS(Point f)
+        {
+            frameSize = f;
         }
     }
 }

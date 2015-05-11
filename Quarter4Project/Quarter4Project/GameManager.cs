@@ -18,11 +18,25 @@ namespace Quarter4Project
     public class GameManager : Microsoft.Xna.Framework.DrawableGameComponent
     {
 
-        public enum locs { DEMO };
+        public struct Map
+        {
+
+            public Tile[,] tiles;
+            public List<Enemy> enemyList;
+
+            public Map(Tile[,] t, List<Enemy> e)
+            {
+                tiles = t;
+                enemyList = e;
+            }
+
+        };
+
+        public enum locs { DEMO, LEVEL1 };
 
         public Game1 myGame;
 
-        public Tile[,] currentMap;
+        public Map currentMap;
 
         SpriteFont font;
 
@@ -43,10 +57,12 @@ namespace Quarter4Project
         #region Test Variables
 
         Texture2D testPlayerImage;
-        Player testPlayer;
-        Tile[,] demo;
+        public Player testPlayer;
+        Map demo;
 
         public List<Attack> enemyAttacks, friendlyAttacks;
+
+        KeyboardState keyboard, keyboardPrev;
 
         #endregion
 
@@ -67,7 +83,7 @@ namespace Quarter4Project
         public override void Initialize()
         {
             // TODO: Add your initialization code here
-            
+            keyboard = keyboardPrev = Keyboard.GetState();
             spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
             base.Initialize();
         }
@@ -96,9 +112,10 @@ namespace Quarter4Project
         public override void Update(GameTime gameTime)
         {
             // TODO: Add your update code here
+            keyboard = Keyboard.GetState();
             cursor.Update(gameTime);
             testPlayer.Update(gameTime);
-            foreach(Tile t in currentMap)
+            foreach(Tile t in currentMap.tiles)
             {
                 t.Update(gameTime);
             }
@@ -110,6 +127,22 @@ namespace Quarter4Project
             {
                 a.Update(gameTime);
             }
+            foreach (Enemy e in currentMap.enemyList)
+            {
+                e.Update(gameTime);
+            }
+
+            if (keyboard.IsKeyDown(Keys.F10) && keyboardPrev.IsKeyUp(Keys.F10))
+            {
+                myGame.showDebug = !myGame.showDebug;
+            } 
+            if (keyboard.IsKeyDown(Keys.F11) && keyboardPrev.IsKeyUp(Keys.F11))
+            {
+                myGame.noClip = !myGame.noClip;
+            }
+
+            keyboardPrev = keyboard;
+
             base.Update(gameTime);
         }
 
@@ -117,7 +150,7 @@ namespace Quarter4Project
         {
             spriteBatch.Begin();
             spriteBatch.Draw(backgrounds, new Vector2(Game1.screenSize.X - 2000, Game1.screenSize.Y - 1000), Color.White);
-            foreach(Tile t in currentMap)
+            foreach(Tile t in currentMap.tiles)
             {
                 t.Draw(gameTime, spriteBatch);
             }
@@ -137,19 +170,34 @@ namespace Quarter4Project
                     enemyAttacks.RemoveAt(i);
                 }
             }
+            for (int i = 0; i < currentMap.enemyList.Count; i++)
+            {
+                currentMap.enemyList[i].Draw(gameTime, spriteBatch);
+                if (currentMap.enemyList[i].deleteMe)
+                {
+                    currentMap.enemyList.RemoveAt(i);
+                }
+            }
             testPlayer.Draw(gameTime, spriteBatch);
-            spriteBatch.DrawString(font, testPlayer.getPos().ToString() + "," + testPlayer.getJumps() + "," + testPlayer.getFalling() + "," + testPlayer.getDirection(), new Vector2(10, 10), Color.Black);
+
+            if (myGame.showDebug)
+            {
+                spriteBatch.DrawString(font, testPlayer.getPos().ToString() + "," + testPlayer.hp + "," + testPlayer.getFalling() + "," + testPlayer.getDirection(), new Vector2(10, 10), Color.Black);
+            }
             cursor.Draw(gameTime, spriteBatch);
             spriteBatch.End();
+
+            keyboardPrev = keyboard;
 
             base.Draw(gameTime);
         }
 
 
 
-        public Tile[,] GenerateTiles(int[,] m)
+        public GameManager.Map GenerateTiles(int[,] m)
         {
-            Tile[,] map = new Tile[m.GetLength(1), m.GetLength(0)];
+            Tile[,] tiles = new Tile[m.GetLength(1), m.GetLength(0)];
+            List<Enemy> enemies = new List<Enemy>();
 
             for (int i = 0; i < m.GetLength(1); i++ )
             {
@@ -159,26 +207,31 @@ namespace Quarter4Project
                     {
                         default:
                         case 0:
-                            map[i, j] = new Tile(airTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.AIR, m);
+                            tiles[i, j] = new Tile(airTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.AIR, m);
                             break;
                         case 2:
-                            map[i, j] = new Tile(wallTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.WALL, m);
+                            tiles[i, j] = new Tile(wallTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.WALL, m);
                             break;
                         case 1:
                             testPlayer = new Player(new Texture2D[] { testPlayerImage }, new Vector2(40 * i, 40 * j), 5, this);
-                            map[i, j] = new Tile(airTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.AIR, m);
+                            tiles[i, j] = new Tile(airTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.AIR, m);
                             break;
                         case 3:
-                            map[i, j] = new Tile(facadeTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.FACADE, m);
+                            tiles[i, j] = new Tile(facadeTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.FACADE, m);
                             break;
                         case 4:
-                            map[i, j] = new Tile(winTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.WIN, m);
+                            tiles[i, j] = new Tile(winTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.WIN, m);
+                            break;
+                        case 5:
+                            tiles[i, j] = new Tile(airTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.AIR, m);
+                            enemies.Add(new Enemy(new Texture2D[] { testPlayerImage }, new Vector2(40 * i, 40 * j), 5, this, 10, Color.Red));
                             break;
                     }
                 }
             }
 
-                return map;
+            return new Map(tiles, enemies);
+
         }
 
         public void incrementOffset(Vector2 v)

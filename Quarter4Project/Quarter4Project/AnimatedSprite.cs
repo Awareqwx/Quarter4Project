@@ -124,7 +124,7 @@ namespace Quarter4Project
                                 else
                                 {
                                     animIsOver = true;
-                                    currentFrame.Y--;
+                                    currentFrame = new Point(currentSet.sheetSize.X - 1, currentSet.sheetSize.Y - 1);
                                 }
                             }
                         }

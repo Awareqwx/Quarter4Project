@@ -36,7 +36,7 @@ namespace Quarter4Project
             position.X += (float)Math.Cos(rotation) * speed;
             position.Y += (float)Math.Sin(rotation) * speed;
             
-            foreach(Tile t in myGame.currentMap)
+            foreach(Tile t in myGame.currentMap.tiles)
             {
                 if (t.getType() == Tile.TileTypes.WALL)
                 {
