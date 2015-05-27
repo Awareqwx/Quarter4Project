@@ -20,6 +20,8 @@ namespace Quarter4Project
         protected int jumps, maxJumps;
         protected string type;
 
+        protected Point size;
+
         #region Constructors
 
         public Entity(Texture2D[] t, Vector2 p, GameManager g) : base(t)
@@ -27,12 +29,14 @@ namespace Quarter4Project
             deleteMe = false;
             position = p;
             myGame = g;
+            size = Point.Zero;
         }
 
         public Entity(Texture2D t, Vector2 p) : base(t)
         {
             deleteMe = false;
             position = p;
+            size = Point.Zero;
         }
 
         #endregion
@@ -42,7 +46,7 @@ namespace Quarter4Project
         public override void Update(GameTime gameTime)
         {
 
-            points = new Vector2[] { position, new Vector2(position.X + getFrameSize().X, position.Y), new Vector2(position.X, position.Y + getFrameSize().Y), new Vector2(position.X + getFrameSize().X, position.Y + getFrameSize().Y) };
+            points = new Vector2[] { position, new Vector2(position.X + size.X, position.Y), new Vector2(position.X, position.Y + size.Y), new Vector2(position.X + size.X, position.Y + size.Y) };
 
             isFalling = true;
             if ((!myGame.myGame.noClip && type == "Player") || type != "Player")
@@ -53,7 +57,8 @@ namespace Quarter4Project
                     {
                         if (myGame.currentMap.tiles[i, j].getType() == Tile.TileTypes.WALL)
                         {
-                            if (collidesWithTile(myGame.currentMap.tiles[i, j]) == 1)
+                            int t = collidesWithTile(myGame.currentMap.tiles[i, j]);
+                            if (t == 1)
                             {
                                 if (direction.Y > 0)
                                 {
@@ -61,34 +66,34 @@ namespace Quarter4Project
                                     jumps = 0;
                                 }
                                 isFalling = false;
-                                position.Y -= position.Y % 40 - 2;
+                                collide(0);
                             }
                             else
                             {
 
-                                if (collidesWithTile(myGame.currentMap.tiles[i, j]) == 2)
+                                if (t == 2)
                                 {
                                     if (direction.Y < 0)
                                     {
                                         direction.Y = 0;
                                     }
-                                    position.Y += 39 - ((position.Y - 1) % 40);
+                                    collide(1);
                                 }
-                                else if (collidesWithTile(myGame.currentMap.tiles[i, j]) == 3)
+                                else if (t == 3)
                                 {
                                     if (direction.X > 0)
                                     {
                                         direction.X = 0;
                                     }
-                                    position.X -= position.X % 40;
+                                    collide(2);
                                 }
-                                else if (collidesWithTile(myGame.currentMap.tiles[i, j]) == 4)
+                                else if (t == 4)
                                 {
                                     if (direction.X < 0)
                                     {
                                         direction.X = 0;
                                     }
-                                    position.X += 39 - ((position.X - 1) % 40);
+                                    collide(3);
                                 }
                             }
                         }
@@ -103,13 +108,15 @@ namespace Quarter4Project
                 }
                 if (isFalling)
                 {
-                    direction.Y += 0.06f;
+                    direction.Y += (float)(0.3 / speed);
+                    if(jumps == 0)
+                    {
+                        jumps = 1;
+                    }
                 }
             }
-            if(isFalling && currentSet.name != "WON")
-            {
-                setAnimation("JUMP");
-            }
+
+            position = new Vector2(position.X + direction.X * speed, position.Y + direction.Y * speed);
 
             base.Update(gameTime);
         }
@@ -123,7 +130,7 @@ namespace Quarter4Project
         {
             for (int i = 0; i < textures.Length; i++)
             {
-                spriteBatch.Draw(textures[i], position - myGame.cameraOffset, new Rectangle(currentSet.frameSize.X * currentFrame.X + currentSet.startPos.X, currentSet.frameSize.Y * currentFrame.Y + currentSet.startPos.Y, currentSet.frameSize.X, currentSet.frameSize.Y), colors[i]);
+                spriteBatch.Draw(textures[i], position - myGame.cameraOffset, new Rectangle(size.X * currentFrame.X + currentSet.startPos.X, size.Y * currentFrame.Y + currentSet.startPos.Y, size.X, size.Y), colors[i]);
             }
         }
 
@@ -143,7 +150,7 @@ namespace Quarter4Project
 
             if(Collision.magnitude(v) < d)
             {
-                Collision.mapSegment[] segs = new Collision.mapSegment[] { new Collision.mapSegment(new Point((int)position.X + 2, (int)position.Y + getFrameSize().Y), new Point((int)position.X - 2 + getFrameSize().X, (int)position.Y + getFrameSize().Y)), new Collision.mapSegment(new Point((int)position.X - 2 + getFrameSize().X, (int)position.Y), new Point((int)position.X + 2, (int)position.Y)), new Collision.mapSegment(new Point((int)position.X + getFrameSize().X, (int)position.Y + getFrameSize().Y - 5), new Point((int)position.X + getFrameSize().X, (int)position.Y + 5)), new Collision.mapSegment(new Point((int)position.X, (int)position.Y + 5), new Point((int)position.X, (int)position.Y - 5 + getFrameSize().Y)) };
+                Collision.mapSegment[] segs = new Collision.mapSegment[] { new Collision.mapSegment(new Point((int)position.X + 2, (int)position.Y + size.Y), new Point((int)position.X - 2 + size.X, (int)position.Y + size.Y)), new Collision.mapSegment(new Point((int)position.X - 2 + size.X, (int)position.Y), new Point((int)position.X + 2, (int)position.Y)), new Collision.mapSegment(new Point((int)position.X + size.X, (int)position.Y + size.Y - 5), new Point((int)position.X + size.X, (int)position.Y + 5)), new Collision.mapSegment(new Point((int)position.X, (int)position.Y + 5), new Point((int)position.X, (int)position.Y - 5 + size.Y)) };
                 for(int i = 0; i < segs.Length; i++)
                 {
                     if(Collision.CheckSegmentRectangleCollision(segs[i], t.collisionRect()))
@@ -155,9 +162,40 @@ namespace Quarter4Project
             return 0;
         }
 
+        public override void setAnimation(string setName)
+        {
+            base.setAnimation(setName);
+            size = currentSet.frameSize;
+        }
+
+        public void setAnimation(string setName, Point s)
+        {
+            setAnimation(setName);
+            size = s;
+        }
+
         public Vector2 getCenter()
         {
-            return new Vector2(position.X + getFrameSize().X / 2, position.Y + getFrameSize().Y / 2);
+            return new Vector2(position.X + size.X / 2, position.Y + size.Y / 2);
+        }
+
+        public virtual void collide(int i)
+        {
+            switch(i)
+            {
+                case 0:
+                    position.Y -= position.Y % 40 - 2;
+                    break;
+                case 1:
+                    position.Y += 39 - ((position.Y - 1) % 40);
+                    break;
+                case 2:
+                    position.X -= position.X % 40;
+                    break;
+                case 3:
+                    position.X += 39 - ((position.X - 1) % 40);
+                    break;
+            }
         }
 
         #endregion

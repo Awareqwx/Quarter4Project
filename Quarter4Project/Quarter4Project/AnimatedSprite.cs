@@ -141,7 +141,7 @@ namespace Quarter4Project
 
         public virtual void addAnimations() { }
 
-        public void setAnimation(string setName)
+        public virtual void setAnimation(string setName)
         {
             if (currentSet.name != setName)
             {

@@ -27,6 +27,8 @@ namespace Quarter4Project
         SpriteBatch spriteBatch;
 
         GameManager gameManager;
+        MenuManager menuManager;
+
         HUD hud;
 
         #region Cheats
@@ -71,9 +73,10 @@ namespace Quarter4Project
             Maps.init(this);
 
             gameManager = new GameManager(this);
+            menuManager = new MenuManager(this);
             hud = new HUD(this, gameManager);
 
-            SetCurrentLevel(GameLevels.PLAY);
+            SetCurrentLevel(GameLevels.MENU);
         }
 
         /// <summary>
@@ -95,7 +98,7 @@ namespace Quarter4Project
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
-
+            menuManager.Update(gameTime);
             gameManager.Update(gameTime);
             hud.Update(gameTime);
 
@@ -112,6 +115,7 @@ namespace Quarter4Project
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
+            menuManager.Draw(gameTime);
             gameManager.Draw(gameTime);
             hud.Draw(gameTime, spriteBatch);
             spriteBatch.End();
@@ -127,8 +131,8 @@ namespace Quarter4Project
                 currentLevel = level;
                 //splashManager.Enabled = false;
                 //splashManager.Visible = false;
-                //menuManager.Enabled = false;
-                //menuManager.Visible = false;
+                menuManager.Enabled = false;
+                menuManager.Visible = false;
                 gameManager.Enabled = false;
                 gameManager.Visible = false;
                 hud.Enabled = false;
@@ -145,8 +149,8 @@ namespace Quarter4Project
                         //splashManager.Visible = true;
                         break;
                     case GameLevels.MENU:
-                        //menuManager.Enabled = true;
-                        //menuManager.Visible = true;
+                        menuManager.Enabled = true;
+                        menuManager.Visible = true;
                         break;
                     case GameLevels.PLAY:
                         gameManager.Enabled = true;

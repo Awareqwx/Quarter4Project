@@ -13,15 +13,16 @@ namespace Quarter4Project
         public enum BehaviorMode { ATTACK, ADVANCE, FLEE, IDLE, DIE };
 
         int shotTimer, shotDelay;
-        BehaviorMode mode;
+        protected BehaviorMode mode;
 
         int hp, hpMax;
+        protected int level;
 
         Boolean flip;
 
         Texture2D fireball;
 
-        public Enemy(Texture2D[] t, Vector2 p, float s, GameManager g, int h)
+        public Enemy(Texture2D[] t, Vector2 p, float s, GameManager g, int h, int l)
             : base(t, p, g)
         {
             speed = s;
@@ -30,7 +31,26 @@ namespace Quarter4Project
             shotTimer = 0;
             shotDelay = 750;
             mode = BehaviorMode.IDLE;
+            level = l;
             fireball = myGame.myGame.Content.Load<Texture2D>(@"Images\Test\Fireball");
+            switch(level)
+            {
+                case 1:
+                    //colors[1] = Color.Yellow;
+                    break;
+                case 2:
+                    //colors[1] = Color.Red;
+                    break;
+                case 3:
+                    //colors[1] = Color.Purple;
+                    break;
+                case 4:
+                    //colors[1] = Color.Blue;
+                    break;
+                case 5:
+                    //colors[1] = Color.Cyan;
+                    break;
+            }
             addAnimations();
         }
 
@@ -45,38 +65,36 @@ namespace Quarter4Project
             mode = BehaviorMode.IDLE;
             fireball = myGame.myGame.Content.Load<Texture2D>(@"Images\Test\Fireball");
             colors[0] = c;
+            level = 1;
             addAnimations();
         }
 
         public override void Update(GameTime gameTime)
         {
-            if (Collision.getDistance(myGame.testPlayer.getPos(), getPos()) > 500 || myGame.myGame.noClip)
+            if(position.Y > 10000)
             {
-                mode = BehaviorMode.IDLE;
+                deleteMe = true;
             }
-            else if(Collision.getDistance(myGame.testPlayer.getPos(), getPos()) > 350)
+
+            if (hp > 0)
             {
-                mode = BehaviorMode.ADVANCE;
-            }
-            else if (Collision.getDistance(myGame.testPlayer.getPos(), getPos()) < 200)
-            {
-                mode = BehaviorMode.FLEE;
+                setBehavior();
             }
             else
             {
-                mode = BehaviorMode.ATTACK;
-            }
-
-            if (hp <= 0)
-            {
                 if (currentSet.name == "DIE" && animIsOver)
                 {
+                    if (deleteMe == false)
+                    {
+                        myGame.currentMap.scrapList.Add(new Scrap( myGame.getScrapImage(1), position, myGame, level));
+                    }
                     deleteMe = true;
                 }
                 else
                 {
                     setAnimation("DIE");
                     mode = BehaviorMode.DIE;
+                    direction.X = 0;
                 }
             }
 
@@ -154,14 +172,16 @@ namespace Quarter4Project
 
         public override void addAnimations()
         {
-            AnimationSet idle = new AnimationSet("IDLE", new Point(40, 80), new Point(1, 1), new Point(0, 0), 1000, false);
-            AnimationSet walk = new AnimationSet("WALK", new Point(40, 80), new Point(6, 1), new Point(0, 1), 100, true);
-            AnimationSet jump = new AnimationSet("JUMP", new Point(40, 80), new Point(3, 1), new Point(0, 2), 100, false);
-            AnimationSet shoot = new AnimationSet("SHOOT", new Point(60, 80), new Point(2, 1), 150, new Point(240, 0), false);
+            AnimationSet idle = new AnimationSet("IDLE", new Point(80, 80), new Point(1, 1), new Point(0, 0), 1000, false);
+            AnimationSet walk = new AnimationSet("WALK", new Point(80, 80), new Point(5, 1), new Point(0, 1), 100, true);
+            AnimationSet shoot = new AnimationSet("SHOOT", new Point(83, 80), new Point(2, 1), 150, new Point(400, 0), false);
+            AnimationSet hurt = new AnimationSet("HURT", new Point(80, 80), new Point(1, 1), new Point(0, 3), 150, false);
+            AnimationSet die = new AnimationSet("DIE", new Point(83, 80), new Point(2, 2), 300, new Point(400, 81), false);
             sets.Add(idle);
             sets.Add(walk);
-            sets.Add(jump);
             sets.Add(shoot);
+            sets.Add(hurt);
+            sets.Add(die);
             setAnimation("IDLE");
 
             base.addAnimations();
@@ -171,7 +191,7 @@ namespace Quarter4Project
         {
             for (int i = 0; i < textures.Length; i++)
             {
-                if (!flip)
+                if (flip)
                 {
                     spriteBatch.Draw(textures[i], position - myGame.cameraOffset, new Rectangle(currentSet.frameSize.X * currentFrame.X + currentSet.startPos.X, currentSet.frameSize.Y * currentFrame.Y + currentSet.startPos.Y, currentSet.frameSize.X, currentSet.frameSize.Y), colors[i]);
                 }
@@ -179,6 +199,25 @@ namespace Quarter4Project
                 {
                     spriteBatch.Draw(textures[i], position - myGame.cameraOffset, new Rectangle(currentSet.frameSize.X * currentFrame.X + currentSet.startPos.X, currentSet.frameSize.Y * currentFrame.Y + currentSet.startPos.Y, currentSet.frameSize.X, currentSet.frameSize.Y), colors[i], 0, Vector2.Zero, 1, SpriteEffects.FlipHorizontally, 0);
                 }
+            }
+        }
+
+        public override void collide(int i)
+        {
+            switch (i)
+            {
+                case 0:
+                    position.Y -= position.Y % 40 - 2;
+                    break;
+                case 1:
+                    position.Y += 38 - ((position.Y - 1) % 40);
+                    break;
+                case 2:
+                    position.X -= position.X % 40;
+                    break;
+                case 3:
+                    position.X += 38 - ((position.X - 1) % 40);
+                    break;
             }
         }
 
@@ -197,6 +236,26 @@ namespace Quarter4Project
             if (hp > hpMax)
             {
                 hp = hpMax;
+            }
+        }
+
+        public virtual void setBehavior()
+        {
+            if (Collision.getDistance(myGame.testPlayer.getPos(), getPos()) > 500 || myGame.myGame.noClip)
+            {
+                mode = BehaviorMode.IDLE;
+            }
+            else if (Collision.getDistance(myGame.testPlayer.getPos(), getPos()) > 350)
+            {
+                mode = BehaviorMode.ADVANCE;
+            }
+            else if (Collision.getDistance(myGame.testPlayer.getPos(), getPos()) < 200)
+            {
+                mode = BehaviorMode.FLEE;
+            }
+            else
+            {
+                mode = BehaviorMode.ATTACK;
             }
         }
     }

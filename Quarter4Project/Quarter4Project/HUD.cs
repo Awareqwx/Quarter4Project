@@ -20,8 +20,9 @@ namespace Quarter4Project
         Texture2D healthBarLiquidTex, healthBarVialTex, healthBarPlungerTex;
 
         CompoundSprite healthBarVial, healthBarLiquid, healthBarPlunger;
+        CompoundSprite scrapBarVial, scrapBarLiquid, scrapBarPlunger;
 
-        Vector2 healthBarOffset, minimapOffset;
+        Vector2 healthBarOffset, scrapBarOffset;
 
         Game1 myGame;
         GameManager gm;
@@ -32,7 +33,8 @@ namespace Quarter4Project
             myGame = game;
             gm = g;
 
-            healthBarOffset = new Vector2(10, 40);
+            healthBarOffset = new Vector2(10, 10);
+            scrapBarOffset = new Vector2(10, 30);
 
             Initialize();
 
@@ -55,6 +57,10 @@ namespace Quarter4Project
             healthBarVial = new CompoundSprite(new Texture2D[] { healthBarVialTex }, healthBarOffset, new Point(72, 19));
             healthBarPlunger = new CompoundSprite(new Texture2D[] { healthBarPlungerTex }, healthBarOffset, new Point(84, 19));
 
+            scrapBarLiquid = new CompoundSprite(new Texture2D[] { healthBarLiquidTex }, scrapBarOffset, new Point(63, 19), new Color[] { Color.Gold });
+            scrapBarVial = new CompoundSprite(new Texture2D[] { healthBarVialTex }, scrapBarOffset, new Point(72, 19));
+            scrapBarPlunger = new CompoundSprite(new Texture2D[] { healthBarPlungerTex }, scrapBarOffset, new Point(84, 19));
+
             base.Initialize();
         }
 
@@ -64,18 +70,30 @@ namespace Quarter4Project
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         public override void Update(GameTime gameTime)
         {
+            if (!Enabled)
+            {
+                return;
+            }
             // TODO: Add your update code here
             if(myGame.showDebug && healthBarOffset.Y == 10)
             {
-                healthBarOffset.Y = 40;
+                healthBarOffset.Y += 30;
                 healthBarVial.setPos(healthBarOffset);
                 healthBarLiquid.setPos(healthBarOffset);
+
+                scrapBarOffset.Y += 30;
+                scrapBarVial.setPos(scrapBarOffset);
+                scrapBarLiquid.setPos(scrapBarOffset);
             }
             else if (!myGame.showDebug && healthBarOffset.Y == 40)
             {
-                healthBarOffset.Y = 10;
+                healthBarOffset.Y -= 30;
                 healthBarVial.setPos(healthBarOffset);
                 healthBarLiquid.setPos(healthBarOffset);
+
+                scrapBarOffset.Y -= 30;
+                scrapBarVial.setPos(scrapBarOffset);
+                scrapBarLiquid.setPos(scrapBarOffset);
             }
             float a = gm.testPlayer.hp;
             float b = gm.testPlayer.hpMax;
@@ -83,15 +101,28 @@ namespace Quarter4Project
             healthBarPlunger.setPos(new Vector2(f + healthBarOffset.X, healthBarOffset.Y));
             healthBarLiquid.setFS(new Point((int)(21 + f), 19));
 
+            a = gm.testPlayer.getScrap();
+            b = gm.testPlayer.nextUpgrade;
+            f = (a / b) * 42;
+            scrapBarPlunger.setPos(new Vector2(f + scrapBarOffset.X, scrapBarOffset.Y));
+            scrapBarLiquid.setFS(new Point((int)(21 + f), 19));
+
             base.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-
+            if (!Visible)
+            {
+                return;
+            }
             healthBarLiquid.Draw(gameTime, spriteBatch);
             healthBarPlunger.Draw(gameTime, spriteBatch);
             healthBarVial.Draw(gameTime, spriteBatch);
+
+            scrapBarLiquid.Draw(gameTime, spriteBatch);
+            scrapBarPlunger.Draw(gameTime, spriteBatch);
+            scrapBarVial.Draw(gameTime, spriteBatch);
             
             base.Draw(gameTime);
         }

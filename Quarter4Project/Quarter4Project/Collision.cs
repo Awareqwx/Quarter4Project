@@ -265,5 +265,10 @@ namespace Quarter4Project
         }
 
         #endregion
+
+        public static Point toPoint(Vector2 v)
+        {
+            return new Point((int)v.X, (int)v.Y);
+        }
     }
 }

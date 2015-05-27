@@ -29,7 +29,7 @@ namespace Quarter4Project
             position = p;
             myGame = g;
 
-            gridSize = t.Width / 4;
+            gridSize = t.Width;
             Point gridPos = new Point((int)position.X / gridSize, (int)position.Y / gridSize);
             if (gridPos.Y > 0)
             {

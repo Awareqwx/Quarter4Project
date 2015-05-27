@@ -18,6 +18,7 @@
     <XnaOutputType>Game</XnaOutputType>
     <ApplicationIcon>Game.ico</ApplicationIcon>
     <Thumbnail>GameThumbnail.png</Thumbnail>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -30,7 +31,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -75,18 +75,25 @@
     <Compile Include="AnimatedSprite.cs" />
     <Compile Include="Attack.cs" />
     <Compile Include="Collision.cs" />
+    <Compile Include="ComicManager.cs" />
     <Compile Include="CompoundSprite.cs" />
-    <Compile Include="Cursor.cs" />
+    <Compile Include="MenuCursor.cs" />
+    <Compile Include="GameCursor.cs" />
     <Compile Include="Enemy.cs" />
+    <Compile Include="EnemySpawner.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="GameManager.cs" />
+    <Compile Include="Goblin.cs" />
     <Compile Include="HUD.cs" />
     <Compile Include="Maps.cs" />
+    <Compile Include="MenuButton.cs" />
+    <Compile Include="MenuManager.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Projectile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="Scrap.cs" />
     <Compile Include="Tile.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>

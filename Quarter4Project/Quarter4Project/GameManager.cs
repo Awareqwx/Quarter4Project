@@ -23,11 +23,15 @@ namespace Quarter4Project
 
             public Tile[,] tiles;
             public List<Enemy> enemyList;
+            public List<Scrap> scrapList;
+            public Vector2 playerLoc;
 
-            public Map(Tile[,] t, List<Enemy> e)
+            public Map(Tile[,] t, List<Enemy> e, List<Scrap> s, Vector2 v)
             {
                 tiles = t;
                 enemyList = e;
+                scrapList = s;
+                playerLoc = v;
             }
 
         };
@@ -37,6 +41,8 @@ namespace Quarter4Project
         public Game1 myGame;
 
         public Map currentMap;
+
+        public List<EnemySpawner> spawnerList;
 
         SpriteFont font;
 
@@ -51,18 +57,26 @@ namespace Quarter4Project
 
         public Vector2 cameraOffset;
 
-        public Cursor cursor;
+        public GameCursor cursor;
+
+        public Boolean gameOver;
+
         Texture2D cursorImage;
-
-        #region Test Variables
-
-        Texture2D testPlayerImage;
-        public Player testPlayer;
-        Map demo;
+        Texture2D spiderEnemyImage;
+        Texture2D[] goblinTextures;
 
         public List<Attack> enemyAttacks, friendlyAttacks;
 
         KeyboardState keyboard, keyboardPrev;
+
+        #region Test Variables
+
+        Texture2D[] testPlayerImage;
+        public Player testPlayer;
+
+        Texture2D[] scrapImage;
+        Map demo;
+        Map demoInverse;
 
         #endregion
 
@@ -90,17 +104,22 @@ namespace Quarter4Project
 
         protected override void LoadContent()
         {
-            testPlayerImage = myGame.Content.Load<Texture2D>(@"Images\Characters\MaleSprites");
+            testPlayerImage = new Texture2D[] { myGame.Content.Load<Texture2D>(@"Images\Characters\PlayerBase"), myGame.Content.Load<Texture2D>(@"Images\Characters\PlayerChest"), myGame.Content.Load<Texture2D>(@"Images\Characters\PlayerLegs"), myGame.Content.Load<Texture2D>(@"Images\Characters\PlayerLShoulder"), myGame.Content.Load<Texture2D>(@"Images\Characters\PlayerRShoulder"), myGame.Content.Load<Texture2D>(@"Images\Characters\PlayerGloves") };
             airTiles = myGame.Content.Load<Texture2D>(@"Images\Test\AirTiles");
             wallTiles = myGame.Content.Load<Texture2D>(@"Images\Tiles\WallTiles");
             facadeTiles = myGame.Content.Load<Texture2D>(@"Images\Tiles\FacadeTiles");
             winTiles = myGame.Content.Load<Texture2D>(@"Images\Test\WinTile");
             font = myGame.Content.Load<SpriteFont>(@"Fonts\Font");
             backgrounds = myGame.Content.Load<Texture2D>(@"Images\Backgrounds\test_tubes");
-            cursorImage = myGame.Content.Load<Texture2D>(@"Images\Test\Cursor");
-            cursor = new Cursor(cursorImage, this);
+            cursorImage = myGame.Content.Load<Texture2D>(@"Images\cursor");
+            spiderEnemyImage = myGame.Content.Load<Texture2D>(@"Images\Enemies\SpiderEnemy");
+            goblinTextures = new Texture2D[] { myGame.Content.Load<Texture2D>(@"Images\Enemies\GoblinBase"), myGame.Content.Load<Texture2D>(@"Images\Enemies\GoblinLights") };
+            scrapImage = new Texture2D[] { myGame.Content.Load<Texture2D>(@"Images\Scrap\ScrapBase"), myGame.Content.Load<Texture2D>(@"Images\Scrap\ScrapLights") };
+            cursor = new GameCursor(cursorImage, this);
+            testPlayer = new Player(testPlayerImage, Vector2.Zero, 5, this);
             demo = GenerateTiles(Maps.mapDemo);
-            currentMap = demo;
+            demoInverse = GenerateTiles(Maps.mapDemoInverse);
+            switchMap(demo);
             cameraOffset = testPlayer.getPos() - new Vector2(600, 200);
             base.LoadContent();
         }
@@ -111,6 +130,10 @@ namespace Quarter4Project
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         public override void Update(GameTime gameTime)
         {
+            if (!Enabled)
+            {
+                return;
+            }
             // TODO: Add your update code here
             keyboard = Keyboard.GetState();
             cursor.Update(gameTime);
@@ -130,6 +153,10 @@ namespace Quarter4Project
             foreach (Enemy e in currentMap.enemyList)
             {
                 e.Update(gameTime);
+            } 
+            foreach (Scrap s in currentMap.scrapList)
+            {
+                s.Update(gameTime);
             }
 
             if (keyboard.IsKeyDown(Keys.F10) && keyboardPrev.IsKeyUp(Keys.F10))
@@ -141,13 +168,42 @@ namespace Quarter4Project
                 myGame.noClip = !myGame.noClip;
             }
 
-            keyboardPrev = keyboard;
+            if (keyboard.IsKeyDown(Keys.F5) && keyboardPrev.IsKeyUp(Keys.F5))
+            {
+                switchMap(demoInverse);
+            }
+            if (keyboard.IsKeyDown(Keys.F6) && keyboardPrev.IsKeyUp(Keys.F6))
+            {
+                switchMap(demo);
+            }
+            if (keyboard.IsKeyDown(Keys.N) && keyboardPrev.IsKeyUp(Keys.N))
+            {
+                currentMap.scrapList.Add(new Scrap(scrapImage,cursor.getPos(), this, 1));
+            }
+            if (keyboard.IsKeyDown(Keys.M) && keyboardPrev.IsKeyUp(Keys.M))
+            {
+                currentMap.enemyList.Add(new Enemy(new Texture2D[] { spiderEnemyImage }, cursor.getPos(), 2, this, 10, testPlayer.getLevel()));
+            }
+            for (int i = 0; i < spawnerList.Count; i++)
+            {
+                spawnerList[i].Update();
+                if(spawnerList[i].shouldDelete)
+                {
+                    spawnerList.RemoveAt(i);
+                }
+            }
+
+                keyboardPrev = keyboard;
 
             base.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
         {
+            if (!Visible)
+            {
+                return;
+            }
             spriteBatch.Begin();
             spriteBatch.Draw(backgrounds, new Vector2(Game1.screenSize.X - 2000, Game1.screenSize.Y - 1000), Color.White);
             foreach(Tile t in currentMap.tiles)
@@ -177,6 +233,14 @@ namespace Quarter4Project
                 {
                     currentMap.enemyList.RemoveAt(i);
                 }
+            } 
+            for (int i = 0; i < currentMap.scrapList.Count; i++)
+            {
+                currentMap.scrapList[i].Draw(gameTime, spriteBatch);
+                if (currentMap.scrapList[i].deleteMe)
+                {
+                    currentMap.scrapList.RemoveAt(i);
+                }
             }
             testPlayer.Draw(gameTime, spriteBatch);
 
@@ -198,6 +262,8 @@ namespace Quarter4Project
         {
             Tile[,] tiles = new Tile[m.GetLength(1), m.GetLength(0)];
             List<Enemy> enemies = new List<Enemy>();
+            List<Scrap> scrap = new List<Scrap>();
+            Vector2 playerLoc = Vector2.Zero;
 
             for (int i = 0; i < m.GetLength(1); i++ )
             {
@@ -213,7 +279,7 @@ namespace Quarter4Project
                             tiles[i, j] = new Tile(wallTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.WALL, m);
                             break;
                         case 1:
-                            testPlayer = new Player(new Texture2D[] { testPlayerImage }, new Vector2(40 * i, 40 * j), 5, this);
+                            playerLoc = new Vector2(40 * i, 40 * j);
                             tiles[i, j] = new Tile(airTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.AIR, m);
                             break;
                         case 3:
@@ -224,19 +290,53 @@ namespace Quarter4Project
                             break;
                         case 5:
                             tiles[i, j] = new Tile(airTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.AIR, m);
-                            enemies.Add(new Enemy(new Texture2D[] { testPlayerImage }, new Vector2(40 * i, 40 * j), 5, this, 10, Color.Red));
+                            enemies.Add(new Enemy(new Texture2D[] { spiderEnemyImage }, new Vector2(40 * i, 40 * j), 2, this, 10, testPlayer.getLevel()));
+                            break;
+                        case 6:
+                            tiles[i, j] = new Tile(airTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.AIR, m);
+                            enemies.Add(new Goblin(goblinTextures, new Vector2(40 * i, 40 * j), 3, this, 15, testPlayer.getLevel()));
+                            break;
+                        case 7:
+                            tiles[i, j] = new Tile(airTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.AIR, m);
+                            scrap.Add(new Scrap(scrapImage, new Vector2(40 * i, 40 * j), this, 1));
                             break;
                     }
                 }
             }
 
-            return new Map(tiles, enemies);
+            return new Map(tiles, enemies, scrap, playerLoc);
 
         }
 
         public void incrementOffset(Vector2 v)
         {
             cameraOffset += v;
+        }
+
+        public List<EnemySpawner> createSpawners(List<Enemy> e)
+        {
+            List<EnemySpawner> spawners = new List<EnemySpawner>();
+
+            for(int i = 0; i < e.Count; i++)
+            {
+                spawners.Add(new EnemySpawner(e[i], e[i].getPos(), this));
+            }
+
+            return spawners;
+        }
+
+        public void switchMap(Map m)
+        {
+            spawnerList = createSpawners(m.enemyList);
+            m.enemyList = new List<Enemy>();
+            testPlayer.setPos(m.playerLoc);
+            cameraOffset = testPlayer.getPos() - new Vector2(600, 300);
+            currentMap = m;
+        }
+
+        public Texture2D[] getScrapImage(int i)
+        {
+            return scrapImage;
         }
 
     }

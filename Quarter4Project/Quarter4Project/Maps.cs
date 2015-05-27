@@ -14,12 +14,14 @@ namespace Quarter4Project
         static ContentManager content;
 
         public static int[,] mapDemo;
+        public static int[,] mapDemoInverse;
 
         public static void init(Game1 g)
         {
             content = g.Content;
             content.RootDirectory = "Content";
             mapDemo = generateMap("Test");
+            mapDemoInverse = generateMap("TestInverse");
         }
 
         static int[,] generateMap(String s)
