@@ -10,7 +10,16 @@ namespace Quarter4Project
     public class Boss : Enemy
     {
 
+        public enum BossBehavior { SPAWN, IDLE, RADIAL, BEAM, SPIN, SUMMON, DIE };
+
+        public BossBehavior behavior;
+
         public Boss(Texture2D[] t, Vector2 p, GameManager g) : base(t, p, 0, g, 100, 1)
+        {
+            
+        }
+
+        void setBehavior(int b)
         {
 
         }

@@ -142,10 +142,13 @@ namespace Quarter4Project
 
             foreach(Attack a in myGame.friendlyAttacks)
             {
-                if(collisionRect().Intersects(a.collisionRect()))
+                if (!a.deleteMe && hp > 0)
                 {
-                    takeDamage(a.damage);
-                    a.deleteMe = true;
+                    if (collisionRect().Intersects(a.collisionRect()))
+                    {
+                        takeDamage(a.damage);
+                        a.deleteMe = true;
+                    }
                 }
             }
 

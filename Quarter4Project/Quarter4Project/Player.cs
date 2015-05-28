@@ -96,6 +96,7 @@ namespace Quarter4Project
                         direction.Y = -1.8f;
                         isFalling = true;
                         jumps++;
+                        resetAnimation();
                     }
                 }
                 else

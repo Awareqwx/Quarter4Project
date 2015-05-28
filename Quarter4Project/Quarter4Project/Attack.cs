@@ -51,5 +51,10 @@ namespace Quarter4Project
             }
         }
 
+        public Vector2 getCenter()
+        {
+            return new Vector2(position.X + currentSet.frameSize.X / 2, position.Y + currentSet.frameSize.Y / 2);
+        }
+
     }
 }

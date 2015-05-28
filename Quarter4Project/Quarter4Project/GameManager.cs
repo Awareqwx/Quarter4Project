@@ -26,6 +26,7 @@ namespace Quarter4Project
             public List<Scrap> scrapList;
             public Vector2 playerLoc;
 
+
             public Map(Tile[,] t, List<Enemy> e, List<Scrap> s, Vector2 v)
             {
                 tiles = t;
@@ -84,6 +85,7 @@ namespace Quarter4Project
             : base(game)
         {
             myGame = game;
+
             enemyAttacks = new List<Attack>();
             friendlyAttacks = new List<Attack>();
             Initialize();

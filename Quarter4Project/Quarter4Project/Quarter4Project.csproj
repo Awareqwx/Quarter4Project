@@ -78,6 +78,7 @@
     <Compile Include="Collision.cs" />
     <Compile Include="ComicManager.cs" />
     <Compile Include="CompoundSprite.cs" />
+    <Compile Include="HealthPack.cs" />
     <Compile Include="MenuCursor.cs" />
     <Compile Include="GameCursor.cs" />
     <Compile Include="Enemy.cs" />

@@ -54,7 +54,7 @@ namespace Quarter4Project
         {
             for (int i = 0; i < textures.Length; i++)
             {
-                spriteBatch.Draw(textures[i], position - myGame.cameraOffset, new Rectangle(currentSet.frameSize.X * currentFrame.X + currentSet.startPos.X, currentSet.frameSize.Y * currentFrame.Y + currentSet.startPos.Y, currentSet.frameSize.X, currentSet.frameSize.Y), colors[i], rotation, Vector2.Zero, 1, SpriteEffects.None, 0);
+                spriteBatch.Draw(textures[i], getCenter() - myGame.cameraOffset, new Rectangle(currentSet.frameSize.X * currentFrame.X + currentSet.startPos.X, currentSet.frameSize.Y * currentFrame.Y + currentSet.startPos.Y, currentSet.frameSize.X, currentSet.frameSize.Y), colors[i], rotation, Vector2.Zero, 1, SpriteEffects.None, 0);
             }
         }
 
