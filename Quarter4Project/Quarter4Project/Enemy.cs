@@ -31,26 +31,8 @@ namespace Quarter4Project
             shotTimer = 0;
             shotDelay = 750;
             mode = BehaviorMode.IDLE;
-            level = l;
+            setLevel(l);
             fireball = myGame.myGame.Content.Load<Texture2D>(@"Images\Test\Fireball");
-            switch(level)
-            {
-                case 1:
-                    //colors[1] = Color.Yellow;
-                    break;
-                case 2:
-                    //colors[1] = Color.Red;
-                    break;
-                case 3:
-                    //colors[1] = Color.Purple;
-                    break;
-                case 4:
-                    //colors[1] = Color.Blue;
-                    break;
-                case 5:
-                    //colors[1] = Color.Cyan;
-                    break;
-            }
             addAnimations();
         }
 
@@ -65,7 +47,7 @@ namespace Quarter4Project
             mode = BehaviorMode.IDLE;
             fireball = myGame.myGame.Content.Load<Texture2D>(@"Images\Test\Fireball");
             colors[0] = c;
-            level = 1;
+            setLevel(1);
             addAnimations();
         }
 
@@ -258,5 +240,30 @@ namespace Quarter4Project
                 mode = BehaviorMode.ATTACK;
             }
         }
+
+        public void setLevel(int l)
+        {
+            level = l;
+            switch (level)
+            {
+                case 1:
+                    colors[1] = Color.Yellow;
+                    break;
+                case 2:
+                    colors[1] = Color.Red;
+                    break;
+                case 3:
+                    colors[1] = Color.Purple;
+                    break;
+                case 4:
+                    colors[1] = Color.Blue;
+                    break;
+                default:
+                case 5:
+                    colors[1] = Color.Cyan;
+                    break;
+            }
+        }
+
     }
 }

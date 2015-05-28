@@ -26,6 +26,7 @@ namespace Quarter4Project
         {
             if(1600 > Collision.getDistance(pos, myGame.testPlayer.getPos()))
             {
+                enemy.setLevel(myGame.testPlayer.getLevel());
                 myGame.currentMap.enemyList.Add(enemy);
                 shouldDelete = true;
             }

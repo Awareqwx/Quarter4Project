@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="AnimatedSprite.cs" />
     <Compile Include="Attack.cs" />
+    <Compile Include="Boss.cs" />
     <Compile Include="Collision.cs" />
     <Compile Include="ComicManager.cs" />
     <Compile Include="CompoundSprite.cs" />

@@ -62,7 +62,7 @@ namespace Quarter4Project
         public Boolean gameOver;
 
         Texture2D cursorImage;
-        Texture2D spiderEnemyImage;
+        Texture2D[] spiderTextures;
         Texture2D[] goblinTextures;
 
         public List<Attack> enemyAttacks, friendlyAttacks;
@@ -112,7 +112,7 @@ namespace Quarter4Project
             font = myGame.Content.Load<SpriteFont>(@"Fonts\Font");
             backgrounds = myGame.Content.Load<Texture2D>(@"Images\Backgrounds\test_tubes");
             cursorImage = myGame.Content.Load<Texture2D>(@"Images\cursor");
-            spiderEnemyImage = myGame.Content.Load<Texture2D>(@"Images\Enemies\SpiderEnemy");
+            spiderTextures = new Texture2D[] { myGame.Content.Load<Texture2D>(@"Images\Enemies\SpiderBase"), myGame.Content.Load<Texture2D>(@"Images\Enemies\SpiderLights") };
             goblinTextures = new Texture2D[] { myGame.Content.Load<Texture2D>(@"Images\Enemies\GoblinBase"), myGame.Content.Load<Texture2D>(@"Images\Enemies\GoblinLights") };
             scrapImage = new Texture2D[] { myGame.Content.Load<Texture2D>(@"Images\Scrap\ScrapBase"), myGame.Content.Load<Texture2D>(@"Images\Scrap\ScrapLights") };
             cursor = new GameCursor(cursorImage, this);
@@ -182,7 +182,7 @@ namespace Quarter4Project
             }
             if (keyboard.IsKeyDown(Keys.M) && keyboardPrev.IsKeyUp(Keys.M))
             {
-                currentMap.enemyList.Add(new Enemy(new Texture2D[] { spiderEnemyImage }, cursor.getPos(), 2, this, 10, testPlayer.getLevel()));
+                currentMap.enemyList.Add(new Enemy(spiderTextures, cursor.getPos(), 2, this, 10, testPlayer.getLevel()));
             }
             for (int i = 0; i < spawnerList.Count; i++)
             {
@@ -290,11 +290,11 @@ namespace Quarter4Project
                             break;
                         case 5:
                             tiles[i, j] = new Tile(airTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.AIR, m);
-                            enemies.Add(new Enemy(new Texture2D[] { spiderEnemyImage }, new Vector2(40 * i, 40 * j), 2, this, 10, testPlayer.getLevel()));
+                            enemies.Add(new Enemy(spiderTextures, new Vector2(40 * i, 40 * j), 2, this, 10, 1));
                             break;
                         case 6:
                             tiles[i, j] = new Tile(airTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.AIR, m);
-                            enemies.Add(new Goblin(goblinTextures, new Vector2(40 * i, 40 * j), 3, this, 15, testPlayer.getLevel()));
+                            enemies.Add(new Goblin(goblinTextures, new Vector2(40 * i, 40 * j), 3, this, 15, 1));
                             break;
                         case 7:
                             tiles[i, j] = new Tile(airTiles, new Vector2(40 * i, 40 * j), this, Tile.TileTypes.AIR, m);
