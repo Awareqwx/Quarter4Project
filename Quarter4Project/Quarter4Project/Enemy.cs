@@ -74,7 +74,11 @@ namespace Quarter4Project
                 }
                 else
                 {
-                    setAnimation("DIE");
+                    if (currentSet.name != "DIE")
+                    {
+                        setAnimation("DIE");
+                        myGame.EnemyDeath.Play();
+                    }
                     mode = BehaviorMode.DIE;
                     direction.X = 0;
                 }
@@ -142,13 +146,10 @@ namespace Quarter4Project
 
             foreach(Attack a in myGame.friendlyAttacks)
             {
-                if (!a.deleteMe && hp > 0)
+                if(collisionRect().Intersects(a.collisionRect()))
                 {
-                    if (collisionRect().Intersects(a.collisionRect()))
-                    {
-                        takeDamage(a.damage);
-                        a.deleteMe = true;
-                    }
+                    takeDamage(a.damage);
+                    a.deleteMe = true;
                 }
             }
 

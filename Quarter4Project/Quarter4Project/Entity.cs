@@ -141,21 +141,22 @@ namespace Quarter4Project
 
         public int collidesWithTile(Tile t)
         {
-            if (t.getType() == Tile.TileTypes.AIR)
+            if(t.getType() == Tile.TileTypes.AIR)
             {
                 return 0;
             }
-            if (Collision.getDistanceSquared(position, t.getPos()) > 500 * 500)
-            {
-                return 0;
-            }
+            Vector2 v = new Vector2(t.getPos().X - position.X, t.getPos().Y - position.Y);
+            double d = Math.Sqrt(Math.Pow(t.getFrameSize().X + getFrameSize().X, 2) + Math.Pow(t.getFrameSize().Y + getFrameSize().Y, 2));
 
-            Collision.mapSegment[] segs = new Collision.mapSegment[] { new Collision.mapSegment(new Point((int)position.X + 2, (int)position.Y + size.Y), new Point((int)position.X - 2 + size.X, (int)position.Y + size.Y)), new Collision.mapSegment(new Point((int)position.X - 2 + size.X, (int)position.Y), new Point((int)position.X + 2, (int)position.Y)), new Collision.mapSegment(new Point((int)position.X + size.X, (int)position.Y + size.Y - 5), new Point((int)position.X + size.X, (int)position.Y + 5)), new Collision.mapSegment(new Point((int)position.X, (int)position.Y + 5), new Point((int)position.X, (int)position.Y - 5 + size.Y)) };
-            for (int i = 0; i < segs.Length; i++)
+            if(Collision.magnitude(v) < d)
             {
-                if (Collision.CheckSegmentRectangleCollision(segs[i], t.collisionRect()))
+                Collision.mapSegment[] segs = new Collision.mapSegment[] { new Collision.mapSegment(new Point((int)position.X + 2, (int)position.Y + size.Y), new Point((int)position.X - 2 + size.X, (int)position.Y + size.Y)), new Collision.mapSegment(new Point((int)position.X - 2 + size.X, (int)position.Y), new Point((int)position.X + 2, (int)position.Y)), new Collision.mapSegment(new Point((int)position.X + size.X, (int)position.Y + size.Y - 5), new Point((int)position.X + size.X, (int)position.Y + 5)), new Collision.mapSegment(new Point((int)position.X, (int)position.Y + 5), new Point((int)position.X, (int)position.Y - 5 + size.Y)) };
+                for(int i = 0; i < segs.Length; i++)
                 {
-                    return i + 1;
+                    if(Collision.CheckSegmentRectangleCollision(segs[i], t.collisionRect()))
+                    {
+                        return i + 1;
+                    }
                 }
             }
             return 0;

@@ -65,6 +65,7 @@ namespace Quarter4Project
                         if (!isFalling)
                         {
                             setAnimation("WALK");
+                            myGame.Walk.Play();
                         }
                     }
                     else if (keyboard.IsKeyDown(Keys.A))
@@ -74,6 +75,7 @@ namespace Quarter4Project
                         if (!isFalling)
                         {
                             setAnimation("WALK");
+                            myGame.Walk.Play();
                         }
                     }
                     else
@@ -87,16 +89,17 @@ namespace Quarter4Project
                 }
                 if (!myGame.myGame.noClip)
                 {
-                    if (won)
+                    if (won && currentSet.name != "WON")
                     {
                         setAnimation("WON");
+                        myGame.LVLEND.Play();
                     }
                     else if ((keyboard.IsKeyDown(Keys.W) && keyboardPrev.IsKeyUp(Keys.W)) && (!isFalling || jumps < maxJumps || myGame.myGame.noClip))
                     {
                         direction.Y = -1.8f;
                         isFalling = true;
                         jumps++;
-                        resetAnimation();
+                        myGame.Jump.Play(); 
                     }
                 }
                 else
@@ -161,6 +164,7 @@ namespace Quarter4Project
                     flip = v.X < position.X;
                     myGame.friendlyAttacks.Add(new Projectile(fireball, Color.White, 2 + upgradeLevel, (getCenter() + new Vector2(0, -20)), 5, (float)Math.Atan2(myGame.cursor.getPos().Y - (getCenter() + new Vector2(0, -10)).Y, myGame.cursor.getPos().X - (getCenter() + new Vector2(0, -10)).X), myGame));
                     setAnimation("SHOOT");
+                    myGame.Fire.Play();
                 }
                 if (isFalling && currentSet.name != "WON")
                 {
@@ -177,6 +181,7 @@ namespace Quarter4Project
                 {
                     setAnimation("DIE");
                     direction.X = 0;
+                    myGame.Death.Play();
                 }
                 base.Update(gameTime);
             }

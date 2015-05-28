@@ -26,7 +26,6 @@ namespace Quarter4Project
             public List<Scrap> scrapList;
             public Vector2 playerLoc;
 
-
             public Map(Tile[,] t, List<Enemy> e, List<Scrap> s, Vector2 v)
             {
                 tiles = t;
@@ -44,6 +43,19 @@ namespace Quarter4Project
         public Map currentMap;
 
         public List<EnemySpawner> spawnerList;
+
+        public SoundEffectInstance Walk;
+        public SoundEffect Fire;
+        public SoundEffectInstance Death;
+      //  public SoundEffect MMAtk;
+        public SoundEffect EnemyDeath;
+      //  public SoundEffect Explosion;
+        public SoundEffectInstance Jump;
+      //  public Song FinalBoss;
+       // public Song MainLvl;
+        public SoundEffectInstance LVLEND;
+        public SoundEffect LVLSTART;
+
 
         SpriteFont font;
 
@@ -85,7 +97,6 @@ namespace Quarter4Project
             : base(game)
         {
             myGame = game;
-
             enemyAttacks = new List<Attack>();
             friendlyAttacks = new List<Attack>();
             Initialize();
@@ -106,6 +117,22 @@ namespace Quarter4Project
 
         protected override void LoadContent()
         {
+            // Sound Files (added by Michael)
+            Walk = myGame.Content.Load<SoundEffect>(@"Audio\FootSteps").CreateInstance();
+            Fire = myGame.Content.Load<SoundEffect>(@"Audio\Laser");
+            Jump = myGame.Content.Load<SoundEffect>(@"Audio\Jump").CreateInstance();
+            LVLEND = myGame.Content.Load<SoundEffect>(@"Audio\LvlEnd").CreateInstance();  
+            LVLSTART = myGame.Content.Load<SoundEffect>(@"Audio\LvlStart"); 
+            EnemyDeath = myGame.Content.Load<SoundEffect>(@"Audio\RMonDeath");
+          //  Explosion = myGame.Content.Load<SoundEffect>(@"Audio\Explosion"); melee enemy death || rocket launcher
+           // MainLvl = myGame.Content.Load<Song>(@"Audio\");   need the song you have
+          //  FinalBoss = myGame.Content.Load<Song>(@"Audio\FinalBoss"); final boss battle needs to actually be in the game for this
+            Death = myGame.Content.Load<SoundEffect>(@"Audio\Death").CreateInstance();
+
+
+
+
+
             testPlayerImage = new Texture2D[] { myGame.Content.Load<Texture2D>(@"Images\Characters\PlayerBase"), myGame.Content.Load<Texture2D>(@"Images\Characters\PlayerChest"), myGame.Content.Load<Texture2D>(@"Images\Characters\PlayerLegs"), myGame.Content.Load<Texture2D>(@"Images\Characters\PlayerLShoulder"), myGame.Content.Load<Texture2D>(@"Images\Characters\PlayerRShoulder"), myGame.Content.Load<Texture2D>(@"Images\Characters\PlayerGloves") };
             airTiles = myGame.Content.Load<Texture2D>(@"Images\Test\AirTiles");
             wallTiles = myGame.Content.Load<Texture2D>(@"Images\Tiles\WallTiles");
@@ -334,6 +361,7 @@ namespace Quarter4Project
             testPlayer.setPos(m.playerLoc);
             cameraOffset = testPlayer.getPos() - new Vector2(600, 300);
             currentMap = m;
+            LVLSTART.Play();
         }
 
         public Texture2D[] getScrapImage(int i)

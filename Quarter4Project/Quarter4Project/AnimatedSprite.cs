@@ -174,12 +174,6 @@ namespace Quarter4Project
             return new Rectangle((int)position.X, (int)position.Y, (int)currentSet.frameSize.X, (int)currentSet.frameSize.Y);
         }
 
-        public void resetAnimation()
-        {
-            currentFrame = Point.Zero;
-            animIsOver = false;
-        }
-
         #endregion
 
     }

@@ -35,7 +35,7 @@ namespace Quarter4Project
 
         public override void Update(GameTime gameTime)
         {
-            if(!isFalling && direction.X != 0)
+            if(!isFalling)
             {
                 direction.X = 0;
             }
@@ -61,6 +61,7 @@ namespace Quarter4Project
             sets.Add(new AnimationSet("9", new Point(15, 15), new Point(1, 1), new Point(4, 1), 1000, false));
             sets.Add(new AnimationSet("10", new Point(15, 15), new Point(1, 1), new Point(1, 2), 1000, false));
             setAnimation("" + r.Next(11));
+            base.addAnimations();
         }
 
         public override void collide(int i)
