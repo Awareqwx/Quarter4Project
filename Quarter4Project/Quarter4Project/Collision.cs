@@ -89,6 +89,11 @@ namespace Quarter4Project
             return (float)Math.Sqrt((v.X * v.X) + (v.Y * v.Y));
         }
 
+        public static float magnitudeSquared(Vector2 v)
+        {
+            return (float)(v.X * v.X) + (v.Y * v.Y);
+        }
+
         public static Vector2 unitVector(Vector2 v)
         {
             if (v != Vector2.Zero)
@@ -257,10 +262,24 @@ namespace Quarter4Project
             return d;
         }
 
+        public static float getDistanceSquared(Vector2 a, Vector2 b)
+        {
+            float d;
+            d = magnitudeSquared(a - b);
+            return d;
+        }
+
         public static float getDistance(Point a, Point b)
         {
             float d;
             d = magnitude(new Vector2(a.X - b.X, a.Y - b.Y));
+            return d;
+        }
+
+        public static float getDistanceSquared(Point a, Point b)
+        {
+            float d;
+            d = magnitudeSquared(new Vector2(a.X - b.X, a.Y - b.Y));
             return d;
         }
 

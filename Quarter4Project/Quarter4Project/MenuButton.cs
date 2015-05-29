@@ -95,7 +95,7 @@ namespace Quarter4Project
                     testPurple();
                     break;
                 case ButtonAction.PLAY:
-                    myMenu.myGame.SetCurrentLevel(Game1.GameLevels.PLAY);
+                    myMenu.myGame.SetCurrentLevel(Game1.GameLevels.COMIC);
                     break;
                 case ButtonAction.SAVE:
                     testPurple();

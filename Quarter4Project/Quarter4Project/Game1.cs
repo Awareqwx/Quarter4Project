@@ -17,7 +17,7 @@ namespace Quarter4Project
     public class Game1 : Microsoft.Xna.Framework.Game
     {
 
-        public enum GameLevels { SPLASH, MENU, PLAY, WIN, LOSE };
+        public enum GameLevels { SPLASH, MENU, PLAY, WIN, LOSE, COMIC };
 
         public GameLevels currentLevel;
 
@@ -26,8 +26,11 @@ namespace Quarter4Project
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        GameManager gameManager;
-        MenuManager menuManager;
+        public GameManager gameManager;
+        public MenuManager menuManager;
+        public ComicManager comicManager;
+        public LoseManager loseManager;
+        public WinManager winManager;
 
         HUD hud;
 
@@ -72,8 +75,11 @@ namespace Quarter4Project
             // TODO: use this.Content to load your game content here
             Maps.init(this);
 
+            comicManager = new ComicManager(this);
             gameManager = new GameManager(this);
             menuManager = new MenuManager(this);
+            loseManager = new LoseManager(this);
+            winManager = new WinManager(this);
             hud = new HUD(this, gameManager);
 
             SetCurrentLevel(GameLevels.MENU);
@@ -101,6 +107,9 @@ namespace Quarter4Project
             menuManager.Update(gameTime);
             gameManager.Update(gameTime);
             hud.Update(gameTime);
+            comicManager.Update(gameTime);
+            loseManager.Update(gameTime);
+            winManager.Update(gameTime);
 
             // TODO: Add your update logic here
 
@@ -113,12 +122,15 @@ namespace Quarter4Project
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
             menuManager.Draw(gameTime);
             gameManager.Draw(gameTime);
             hud.Draw(gameTime, spriteBatch);
+            loseManager.Draw(gameTime);
             spriteBatch.End();
+            comicManager.Draw(gameTime);
+            winManager.Draw(gameTime);
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
@@ -126,7 +138,7 @@ namespace Quarter4Project
 
         public void SetCurrentLevel(GameLevels level)
         {
-            //if (currentLevel != level)
+            if (currentLevel != level)
             {
                 currentLevel = level;
                 //splashManager.Enabled = false;
@@ -135,12 +147,14 @@ namespace Quarter4Project
                 menuManager.Visible = false;
                 gameManager.Enabled = false;
                 gameManager.Visible = false;
+                comicManager.Enabled = false;
+                comicManager.Visible = false;
                 hud.Enabled = false;
                 hud.Visible = false;
-                //winScreen.Enabled = false;
-                //winScreen.Visible = false;
-                //loseScreen.Enabled = false;
-                //loseScreen.Visible = false;
+                winManager.Enabled = false;
+                winManager.Visible = false;
+                loseManager.Enabled = false;
+                loseManager.Visible = false;
 
                 switch (currentLevel)
                 {
@@ -151,6 +165,8 @@ namespace Quarter4Project
                     case GameLevels.MENU:
                         menuManager.Enabled = true;
                         menuManager.Visible = true;
+                        menuManager.startSound();
+                        gameManager.stopSound();
                         break;
                     case GameLevels.PLAY:
                         gameManager.Enabled = true;
@@ -159,12 +175,22 @@ namespace Quarter4Project
                         hud.Visible = true;
                         break;
                     case GameLevels.WIN:
-                        //winScreen.Enabled = true;
-                        //winScreen.Visible = true;
+                        winManager.Enabled = true;
+                        winManager.Visible = true;
+                        gameManager.stopSound();
+                        menuManager.stopSound();
                         break;
                     case GameLevels.LOSE:
-                        //loseScreen.Enabled = true;
-                        //loseScreen.Visible = true;
+                        loseManager.Enabled = true;
+                        loseManager.Visible = true;
+                        gameManager.stopSound();
+                        menuManager.stopSound();
+                        break;
+                    case GameLevels.COMIC:
+                        comicManager.Visible = true;
+                        comicManager.Enabled = true;
+                        gameManager.startSound();
+                        menuManager.stopSound();
                         break;
                     default:
                         break;
@@ -175,6 +201,13 @@ namespace Quarter4Project
         public GraphicsDeviceManager getGraphics()
         {
             return graphics;
+        }
+
+        public void Reset()
+        {
+            gameManager.resetMaps();
+            winManager.resetComic();
+            comicManager.resetComic();
         }
 
     }

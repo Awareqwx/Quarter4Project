@@ -49,7 +49,7 @@ namespace Quarter4Project
             points = new Vector2[] { position, new Vector2(position.X + size.X, position.Y), new Vector2(position.X, position.Y + size.Y), new Vector2(position.X + size.X, position.Y + size.Y) };
 
             isFalling = true;
-            if ((!myGame.myGame.noClip && type == "Player") || type != "Player")
+            if ((!myGame.myGame.noClip && type == "Player") || (type != "Player" && type != "Boss"))
             {
                 for (int i = 0; i < myGame.currentMap.tiles.GetLength(0); i++)
                 {

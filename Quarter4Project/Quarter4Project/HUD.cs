@@ -95,14 +95,14 @@ namespace Quarter4Project
                 scrapBarVial.setPos(scrapBarOffset);
                 scrapBarLiquid.setPos(scrapBarOffset);
             }
-            float a = gm.testPlayer.hp;
-            float b = gm.testPlayer.hpMax;
+            float a = gm.player.hp;
+            float b = gm.player.hpMax;
             float f = (a / b) * 42;
             healthBarPlunger.setPos(new Vector2(f + healthBarOffset.X, healthBarOffset.Y));
             healthBarLiquid.setFS(new Point((int)(21 + f), 19));
 
-            a = gm.testPlayer.getScrap();
-            b = gm.testPlayer.nextUpgrade;
+            a = gm.player.getScrap();
+            b = gm.player.nextUpgrade;
             f = (a / b) * 42;
             scrapBarPlunger.setPos(new Vector2(f + scrapBarOffset.X, scrapBarOffset.Y));
             scrapBarLiquid.setFS(new Point((int)(21 + f), 19));

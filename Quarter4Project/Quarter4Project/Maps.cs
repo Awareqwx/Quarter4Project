@@ -13,15 +13,25 @@ namespace Quarter4Project
 
         static ContentManager content;
 
-        public static int[,] mapDemo;
-        public static int[,] mapDemoInverse;
+        static Boolean initialized;
+
+        public static int[,] mapLevel1;
+        public static int[,] mapLevel2;
+        public static int[,] mapLevel3;
+        public static int[,] mapBossLevel;
 
         public static void init(Game1 g)
         {
-            content = g.Content;
-            content.RootDirectory = "Content";
-            mapDemo = generateMap("Test");
-            mapDemoInverse = generateMap("TestInverse");
+            if (!initialized)
+            {
+                initialized = true;
+                content = g.Content;
+                content.RootDirectory = "Content";
+                mapLevel1 = generateMap("Level1Map");
+                mapLevel3 = generateMap("Level3Map");
+                mapBossLevel = generateMap("BossMap");
+                mapLevel2 = generateMap("Level2Map");
+            }
         }
 
         static int[,] generateMap(String s)

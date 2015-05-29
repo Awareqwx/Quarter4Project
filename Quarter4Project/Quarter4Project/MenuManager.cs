@@ -24,6 +24,8 @@ namespace Quarter4Project
         Texture2D cursorImage;
         Texture2D buttonImage;
 
+        SoundEffectInstance menuMusic;
+
         SpriteFont fontLarge;
 
         public Game1 myGame;
@@ -57,11 +59,15 @@ namespace Quarter4Project
             buttonImage = myGame.Content.Load<Texture2D>(@"Images\MenuButton");
             fontLarge = myGame.Content.Load<SpriteFont>(@"Fonts\FontLarge");
 
+            menuMusic = myGame.Content.Load<SoundEffect>(@"Audio\Music\MenuMusic").CreateInstance();
+            menuMusic.IsLooped = true;
+            menuMusic.Play();
+
             cursor = new MenuCursor(cursorImage, this);
 
             buttons = new MenuButton[] { 
                 new MenuButton(new Vector2(80, 200), MenuButton.ButtonAction.PLAY, buttonImage, "Play", fontLarge, this), 
-                new MenuButton(new Vector2(80, 300), MenuButton.ButtonAction.OPTIONS, buttonImage, "Options", fontLarge, this) 
+                new MenuButton(new Vector2(80, 300), MenuButton.ButtonAction.CREDITS, buttonImage, "Credits", fontLarge, this) 
             };
 
             base.Initialize();
@@ -77,6 +83,11 @@ namespace Quarter4Project
             if(!Enabled)
             {
                 return;
+            }
+
+            if(Keyboard.GetState().IsKeyDown(Keys.P))
+            {
+                myGame.SetCurrentLevel(Game1.GameLevels.PLAY);
             }
 
             cursor.Update(gameTime);
@@ -111,5 +122,16 @@ namespace Quarter4Project
             spriteBatch.End();
             base.Draw(gameTime);
         }
+
+        public void stopSound()
+        {
+            menuMusic.Stop();
+        }
+
+        public void startSound()
+        {
+            menuMusic.Play();
+        }
+
     }
 }

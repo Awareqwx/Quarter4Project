@@ -24,11 +24,13 @@ namespace Quarter4Project
 
         public void Update()
         {
-            if(1600 > Collision.getDistance(pos, myGame.testPlayer.getPos()))
+            if (1600 * 1600 > Collision.getDistanceSquared(pos, myGame.player.getPos()))
             {
-                enemy.setLevel(myGame.testPlayer.getLevel());
-                myGame.currentMap.enemyList.Add(enemy);
-                shouldDelete = true;
+                if (!shouldDelete)
+                {
+                    myGame.currentMap.enemyList.Add(enemy);
+                    shouldDelete = true;
+                }
             }
         }
 

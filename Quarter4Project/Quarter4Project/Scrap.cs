@@ -39,10 +39,10 @@ namespace Quarter4Project
             {
                 direction.X = 0;
             }
-            if(collisionRect().Intersects(myGame.testPlayer.collisionRect()) && !deleteMe)
+            if(collisionRect().Intersects(myGame.player.collisionRect()) && !deleteMe)
             {
                 deleteMe = true;
-                myGame.testPlayer.addScrap(value);
+                myGame.player.addScrap(value);
             }
             base.Update(gameTime);
         }

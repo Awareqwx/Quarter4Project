@@ -19,6 +19,8 @@ namespace Quarter4Project
         int upgradeLevel;
         public int nextUpgrade;
 
+        int advanceTimer;
+
         Texture2D fireball;
         Boolean flip;
         private bool won;
@@ -89,17 +91,29 @@ namespace Quarter4Project
                 }
                 if (!myGame.myGame.noClip)
                 {
-                    if (won && currentSet.name != "WON")
+                    if (won)
                     {
-                        setAnimation("WON");
-                        myGame.LVLEND.Play();
+                        if (currentSet.name != "WON")
+                        {
+                            setAnimation("WON");
+                            myGame.LVLEND.Play();
+                        }
+                        advanceTimer += gameTime.ElapsedGameTime.Milliseconds;
+                        if(advanceTimer >= 3000)
+                        {
+                            won = false;
+                            advanceTimer = 0;
+                            myGame.advanceLevel();
+                        }
                     }
-                    else if ((keyboard.IsKeyDown(Keys.W) && keyboardPrev.IsKeyUp(Keys.W)) && (!isFalling || jumps < maxJumps || myGame.myGame.noClip))
+                    else if ((keyboard.IsKeyDown(Keys.W) && keyboardPrev.IsKeyUp(Keys.W)) && (!isFalling || jumps < maxJumps || myGame.myGame.noClip) && !won)
                     {
                         direction.Y = -1.8f;
                         isFalling = true;
                         jumps++;
-                        myGame.Jump.Play(); 
+                        myGame.effects.Add(myGame.Jump.CreateInstance());
+                        myGame.effects[myGame.effects.Count - 1].Play();
+                        resetAnim();
                     }
                 }
                 else
@@ -163,8 +177,12 @@ namespace Quarter4Project
                     Vector2 v = myGame.cursor.getPos();
                     flip = v.X < position.X;
                     myGame.friendlyAttacks.Add(new Projectile(fireball, Color.White, 2 + upgradeLevel, (getCenter() + new Vector2(0, -20)), 5, (float)Math.Atan2(myGame.cursor.getPos().Y - (getCenter() + new Vector2(0, -10)).Y, myGame.cursor.getPos().X - (getCenter() + new Vector2(0, -10)).X), myGame));
-                    setAnimation("SHOOT");
-                    myGame.Fire.Play();
+                    if (!isFalling)
+                    {
+                        setAnimation("SHOOT");
+                    }
+                    myGame.effects.Add(myGame.Fire.CreateInstance());
+                    myGame.effects[myGame.effects.Count - 1].Play();
                 }
                 if (isFalling && currentSet.name != "WON")
                 {
@@ -179,9 +197,12 @@ namespace Quarter4Project
                 }
                 else
                 {
-                    setAnimation("DIE");
+                    if (currentSet.name != "DIE")
+                    {
+                        setAnimation("DIE");
+                        myGame.Death.Play();
+                    }
                     direction.X = 0;
-                    myGame.Death.Play();
                 }
                 base.Update(gameTime);
             }
@@ -227,10 +248,10 @@ namespace Quarter4Project
         {
             AnimationSet idle = new AnimationSet("IDLE", new Point(40, 80), new Point(1, 1), new Point(0, 0), 1000, false);
             AnimationSet walk = new AnimationSet("WALK", new Point(40, 80), new Point(6, 1), new Point(0, 1), 100, true);
-            AnimationSet jump = new AnimationSet("JUMP", new Point(40, 91), new Point(2, 1), 100, new Point(0, 161), false);
+            AnimationSet jump = new AnimationSet("JUMP", new Point(40, 91), new Point(3, 1), 100, new Point(0, 161), false);
             AnimationSet shoot = new AnimationSet("SHOOT", new Point(60, 80), new Point(2, 1), 150, new Point(240, 0), false);
-            AnimationSet win = new AnimationSet("WON", new Point(40, 80), new Point(1, 1), 1000, new Point(80, 161), false);
-            AnimationSet die = new AnimationSet("DIE", new Point(60, 80), new Point(2, 2), 1000, new Point(240, 81), false);
+            AnimationSet win = new AnimationSet("WON", new Point(40, 80), new Point(1, 1), 1000, new Point(120, 161), false);
+            AnimationSet die = new AnimationSet("DIE", new Point(60, 80), new Point(2, 2), 1100, new Point(240, 81), false);
             sets.Add(idle);
             sets.Add(walk);
             sets.Add(jump);
@@ -310,6 +331,13 @@ namespace Quarter4Project
             upgradeLevel++;
             scrap -= nextUpgrade;
             nextUpgrade += 2;
+        }
+
+        public void setLevel(int l)
+        {
+            upgradeLevel = l;
+            nextUpgrade = 3 + 2 * l;
+            scrap = 0;
         }
 
     }

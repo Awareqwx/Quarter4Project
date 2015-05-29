@@ -15,12 +15,12 @@ namespace Quarter4Project
         int shotTimer, shotDelay;
         protected BehaviorMode mode;
 
-        int hp, hpMax;
+        protected int hp, hpMax;
         protected int level;
 
         Boolean flip;
 
-        Texture2D fireball;
+        protected Texture2D attackSprite;
 
         public Enemy(Texture2D[] t, Vector2 p, float s, GameManager g, int h, int l)
             : base(t, p, g)
@@ -32,7 +32,7 @@ namespace Quarter4Project
             shotDelay = 750;
             mode = BehaviorMode.IDLE;
             setLevel(l);
-            fireball = myGame.myGame.Content.Load<Texture2D>(@"Images\Test\Fireball");
+            attackSprite = myGame.myGame.Content.Load<Texture2D>(@"Images\Test\Fireball");
             addAnimations();
         }
 
@@ -45,7 +45,7 @@ namespace Quarter4Project
             shotTimer = 0;
             shotDelay = 750;
             mode = BehaviorMode.IDLE;
-            fireball = myGame.myGame.Content.Load<Texture2D>(@"Images\Test\Fireball");
+            attackSprite = myGame.myGame.Content.Load<Texture2D>(@"Images\Test\Fireball");
             colors[0] = c;
             setLevel(1);
             addAnimations();
@@ -68,7 +68,7 @@ namespace Quarter4Project
                 {
                     if (deleteMe == false)
                     {
-                        myGame.currentMap.scrapList.Add(new Scrap( myGame.getScrapImage(1), position, myGame, level));
+                        myGame.currentMap.scrapList.Add(new Scrap( myGame.getScrapImage(1), getCenter(), myGame, level));
                     }
                     deleteMe = true;
                 }
@@ -98,7 +98,7 @@ namespace Quarter4Project
                     {
                         setAnimation("WALK");
                     }
-                    if(position.X > myGame.testPlayer.getPos().X)
+                    if(position.X > myGame.player.getPos().X)
                     {
                         direction.X = -1;
                         flip = true;
@@ -114,7 +114,7 @@ namespace Quarter4Project
                     {
                         setAnimation("WALK");
                     }
-                    if (position.X > myGame.testPlayer.getPos().X)
+                    if (position.X > myGame.player.getPos().X)
                     {
                         direction.X = 1;
                         flip = false;
@@ -131,10 +131,10 @@ namespace Quarter4Project
                         setAnimation("SHOOT");
                     }
                     direction.X = 0;
-                    flip = position.X - myGame.testPlayer.getPos().X > 1;
+                    flip = position.X - myGame.player.getPos().X > 1;
                     if(shotTimer <= 0)
                     {
-                        myGame.enemyAttacks.Add(new Projectile(fireball, Color.White, 5, (getCenter() + new Vector2(0, 0)), 5, (float)Math.Atan2(myGame.testPlayer.getCenter().Y - (getCenter() + new Vector2(0, -10)).Y, myGame.testPlayer.getCenter().X - (getCenter() + new Vector2(0, -10)).X), myGame));
+                        myGame.enemyAttacks.Add(new Projectile(attackSprite, Color.White, 5, (getCenter() + new Vector2(0, 0)), 5, (float)Math.Atan2(myGame.player.getCenter().Y - (getCenter() + new Vector2(0, -10)).Y, myGame.player.getCenter().X - (getCenter() + new Vector2(0, -10)).X), myGame));
                         shotTimer = shotDelay;
                     }
                     break;
@@ -146,10 +146,13 @@ namespace Quarter4Project
 
             foreach(Attack a in myGame.friendlyAttacks)
             {
-                if(collisionRect().Intersects(a.collisionRect()))
+                if (!a.deleteMe && currentSet.name != "DIE")
                 {
-                    takeDamage(a.damage);
-                    a.deleteMe = true;
+                    if (collisionRect().Intersects(a.collisionRect()))
+                    {
+                        takeDamage(a.damage);
+                        a.deleteMe = true;
+                    }
                 }
             }
 
@@ -227,15 +230,15 @@ namespace Quarter4Project
 
         public virtual void setBehavior()
         {
-            if (Collision.getDistance(myGame.testPlayer.getPos(), getPos()) > 500 || myGame.myGame.noClip)
+            if (Collision.getDistance(myGame.player.getPos(), getPos()) > 500 || myGame.myGame.noClip)
             {
                 mode = BehaviorMode.IDLE;
             }
-            else if (Collision.getDistance(myGame.testPlayer.getPos(), getPos()) > 350)
+            else if (Collision.getDistance(myGame.player.getPos(), getPos()) > 350)
             {
                 mode = BehaviorMode.ADVANCE;
             }
-            else if (Collision.getDistance(myGame.testPlayer.getPos(), getPos()) < 200)
+            else if (Collision.getDistance(myGame.player.getPos(), getPos()) < 200)
             {
                 mode = BehaviorMode.FLEE;
             }

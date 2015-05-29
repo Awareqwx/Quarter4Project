@@ -18,15 +18,15 @@ namespace Quarter4Project
 
         public override void setBehavior()
         {
-            if (Collision.getDistance(myGame.testPlayer.getCenter(), getCenter()) > 500 || myGame.myGame.noClip)
+            if (Collision.getDistance(myGame.player.getCenter(), getCenter()) > 500 || myGame.myGame.noClip)
             {
                 mode = BehaviorMode.IDLE;
             }
-            else if (Collision.getDistance(myGame.testPlayer.getCenter(), getCenter()) > 25)
+            else if (Collision.getDistance(myGame.player.getCenter(), getCenter()) > 25)
             {
                 mode = BehaviorMode.ADVANCE;
             }
-            else if (Collision.getDistance(myGame.testPlayer.getCenter(), getCenter()) < 5)
+            else if (Collision.getDistance(myGame.player.getCenter(), getCenter()) < 5)
             {
                 mode = BehaviorMode.FLEE;
             }
