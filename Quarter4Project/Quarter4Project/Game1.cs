@@ -82,7 +82,7 @@ namespace Quarter4Project
             winManager = new WinManager(this);
             hud = new HUD(this, gameManager);
 
-            SetCurrentLevel(GameLevels.MENU);
+            SetCurrentLevel(GameLevels.PLAY);
         }
 
         /// <summary>
